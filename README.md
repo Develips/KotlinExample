@@ -1,2 +1,2 @@
 # KotlinExample
-Kotlin、RxJava、Retrofit
+Kotlin、RxJava2、Retrofit2
