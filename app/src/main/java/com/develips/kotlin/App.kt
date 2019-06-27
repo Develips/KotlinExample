@@ -2,6 +2,7 @@ package com.develips.kotlin
 
 import android.app.Application
 import com.develips.kotlin.net.HttpManager
+import com.develips.kotlin.net.api.ApiService
 
 /**
  * @Author: slp
@@ -11,8 +12,19 @@ import com.develips.kotlin.net.HttpManager
  * @Version: 1.0
  */
 class App : Application(){
+
+    private object Holder {
+        val INSTANCE = App()
+    }
+    companion object {
+        val instance by lazy { Holder.INSTANCE }
+    }
+
     override fun onCreate() {
         super.onCreate()
-        HttpManager.instance.init()
+    }
+
+    fun getApiService():ApiService{
+        return HttpManager.instance.init(ApiService::class.java)
     }
 }

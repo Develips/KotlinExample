@@ -2,9 +2,6 @@ package com.develips.kotlin.net
 
 import com.develips.kotlin.BuildConfig
 import com.develips.kotlin.net.api.ApiService
-import io.reactivex.ObservableTransformer
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -20,7 +17,8 @@ import retrofit2.converter.gson.GsonConverterFactory
  */
 class HttpManager private constructor(){
 
-    lateinit var apiService: ApiService
+//    lateinit var apiService: ApiService
+//    private lateinit var retrofit:Retrofit
 
     private object Holder {
         val INSTANCE = HttpManager()
@@ -30,21 +28,30 @@ class HttpManager private constructor(){
         val instance by lazy { Holder.INSTANCE }
     }
 
-    fun init() {
+    fun <T> init(service:Class<T>):T {
         val okHttpClient = OkHttpClient().newBuilder()
-                .addInterceptor(HttpLoggingInterceptor().setLevel(
-                        if (BuildConfig.DEBUG)
-                            HttpLoggingInterceptor.Level.BODY
-                        else
-                            HttpLoggingInterceptor.Level.NONE
-                )).build()
+                .addInterceptor(initLogInterceptor())
+                .build()
         val retrofit = Retrofit.Builder()
                 .baseUrl("https://www.wanandroid.com/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(okHttpClient)
                 .build()
-
-        apiService = retrofit.create(ApiService::class.java)
+        //apiService = retrofit.create(ApiService::class.java)
+        return retrofit.create(service)
     }
+
+    /*
+        日志拦截器
+     */
+    private fun initLogInterceptor():HttpLoggingInterceptor{
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
+        return interceptor
+    }
+
+//    fun <T> create(service:Class<T>):T{
+//        return retrofit.create(service)
+//    }
 }
